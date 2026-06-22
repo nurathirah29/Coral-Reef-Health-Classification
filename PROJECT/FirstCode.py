@@ -1,0 +1,76 @@
+#import svm
+import os
+import numpy as np 
+import cv2 
+import matplotlib.pyplot as plt
+import pickle
+import random
+#import model
+from sklearn.model_selection import train_test_split
+#train model
+from sklearn.svm import SVC
+
+#download svm
+# dir = 'C:\\Users\\Aqilah\\Downloads\\DEGREE\\FYP\\PROJECT\\Coral Image'
+
+# categories = ['Bleached', 'Healthy']
+
+# data = []
+
+# for category in categories:
+    # path = os.path.join(dir, category)
+    # label = categories.index(category)
+
+    # for img in os.listdir(path):
+        # imgpath = os.path.join(path, img)
+        # coral_img = cv2.imread(imgpath, 0)
+
+        # try:
+            # coral_img = cv2.resize(coral_img, (110,110))
+            # image = np.array(coral_img).flatten()
+
+            # data.append([image, label])
+        # except Exception as e:
+            # pass
+        
+# pick_in = open('data1.pickle', 'wb')        
+# pickle.dump (data, pick_in)
+# pick_in.close()
+
+pick_in = open('data1.pickle', 'rb')        
+data = pickle.load (pick_in)
+pick_in.close()
+
+#shuffle data
+random.shuffle(data)
+features = []
+labels = []
+
+for feature, label in data:
+    features.append(feature)
+    labels.append(label)
+
+#import model
+xtrain, xtest, ytrain, ytest = train_test_split(features, labels, test_size = 0.2)
+
+#train model
+model = SVC(C = 1, kernel = 'rbf', gamma = 'auto')
+model.fit(xtrain, ytrain)
+
+#save model
+pick = open('model.sav', 'rb')
+model = pickle.load(pick)
+pick.close()
+
+prediction = model.predict(xtest)
+accuracy = round((model.score(xtest,ytest)*100), 2)
+
+categories = ['Bleached', 'Healthy']
+
+print('Prediction is', categories[prediction[0]])
+print('Accuracy: ', accuracy)
+
+#mycoral = xtest[0].reshape(50, 50)
+plt.imshow(cv2.resize(200, 200), cmap='gray')
+plt.show()
+#plt.imshow(img, cmap = 'gray')
